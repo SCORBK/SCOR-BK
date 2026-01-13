@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil - Scorbak</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --accent: #0066FF;
+            --accent-light: #4D94FF;
+            --accent-dark: #0052CC;
+            --black: #000000;
+            --dark: #1A1A1A;
+            --gray: #666666;
+            --light-gray: #F5F5F5;
+            --white: #FFFFFF;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --bronze: #CD7F32;
+            --silver: #C0C0C0;
+            --gold: #FFD700;
+            --platinum: #E5E4E2;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            font-family: 'Inter', -apple-system, sans-serif;
+            padding-bottom: 80px;
+            overflow-x: hidden;
+            color: var(--dark);
+        }
+        
+        .top-nav { 
+            background: linear-gradient(135deg, var(--black) 0%, #2d2d2d 100%);
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .back-btn {
+            color: var(--white);
+            font-size: 24px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        
+        .back-btn:active { transform: scale(0.9); }
+        
+        .nav-title { 
+            color: var(--white);
+            font-weight: 800;
+            font-size: 20px;
+            flex: 1;
+        }
+
+        .auth-container {
+            background: var(--white);
+            padding: 36px 28px;
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            max-width: 420px;
+            margin: 40px auto;
+        }
+        
+        .auth-container h4 {
+            font-weight: 800;
+            margin-bottom: 32px;
+            color: var(--black);
+            text-align: center;
+        }
+        
+        .form-control {
+            border: 2px solid #ddd;
+            border-radius: 14px;
+            padding: 16px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background: var(--white);
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+        
+        .form-control:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(0,102,255,0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+            color: var(--white);
+            border: none;
+            padding: 16px;
+            width: 100%;
+            font-weight: 800;
+            font-size: 16px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 6px 20px rgba(0,102,255,0.4);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,102,255,0.5);
+        }
+        
+        .reset-link {
+            text-align: center;
+            margin-top: 12px;
+        }
+        
+        .reset-link a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+            padding: 40px 20px;
+            text-align: center;
+            position: relative;
+            margin-bottom: 80px;
+        }
+        
+        .profile-photo-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 16px;
+        }
+        
+        .profile-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid var(--white);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+        
+        .edit-photo-btn {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 36px;
+            height: 36px;
+            background: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: 0.3s;
+        }
+        
+        .edit-photo-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .edit-photo-btn i {
+            color: var(--accent);
+            font-size: 16px;
+        }
+        
+        .profile-name {
+            color: var(--white);
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        
+        .profile-email {
+            color: rgba(255,255,255,0.9);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .vip-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            border-radius: 25px;
+            color: var(--white);
+            font-weight: 700;
+            font-size: 14px;
+        }
+        
+        .vip-badge i {
+            font-size: 18px;
+        }
+        
+        .vip-badge.bronze { background: linear-gradient(135deg, #CD7F32 0%, #a66728 100%); }
+        .vip-badge.silver { background: linear-gradient(135deg, #C0C0C0 0%, #999999 100%); }
+        .vip-badge.gold { background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); }
+        .vip-badge.platinum { background: linear-gradient(135deg, #E5E4E2 0%, #B8B8B8 100%); color: var(--dark); }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding: 0 20px;
+            margin-top: -60px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: var(--white);
+            padding: 20px 12px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: var(--gray);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .section {
+            background: var(--white);
+            margin: 0 20px 16px;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            color: var(--accent);
+            font-size: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            font-size: 14px;
+            color: var(--gray);
+            font-weight: 600;
+        }
+        
+        .info-value {
+            font-size: 14px;
+            color: var(--dark);
+            font-weight: 700;
+            text-align: right;
+        }
+        
+        .edit-btn {
+            background: var(--light-gray);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--accent);
+            cursor: pointer;
+            transition: 0.3s;
+            width: 100%;
+            margin-top: 12px;
+        }
+        
+        .edit-btn:hover {
+            background: var(--accent);
+            color: var(--white);
+        }
+
+        .address-card {
+            background: var(--light-gray);
+            padding: 16px;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+        
+        .address-card.primary {
+            border: 2px solid var(--accent);
+            background: rgba(0,102,255,0.05);
+        }
+        
+        .address-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 8px;
+        }
+        
+        .address-name {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--dark);
+        }
+        
+        .primary-badge {
+            background: var(--accent);
+            color: var(--white);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        
+        .address-text {
+            font-size: 13px;
+            color: var(--gray);
+            line-height: 1.6;
+        }
+        
+        .address-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .btn-sm {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .btn-edit {
+            background: var(--accent);
+            color: var(--white);
+            flex: 1;
+        }
+        
+        .btn-delete {
+            background: var(--error);
+            color: var(--white);
+        }
+        
+        .btn-primary-toggle {
+            background: var(--light-gray);
+            color: var(--dark);
+        }
+        
+        .add-address-btn {
+            background: var(--light-gray);
+            border: 2px dashed var(--accent);
+            padding: 16px;
+            border-radius: 14px;
+            width: 100%;
+            font-weight: 700;
+            color: var(--accent);
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .add-address-btn:hover {
+            background: rgba(0,102,255,0.1);
+        }
+
+        .payment-card {
+            background: var(--light-gray);
+            padding: 16px;
+            border-radius: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .payment-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--white);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .payment-info {
+            flex: 1;
+        }
+        
+        .payment-type {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--dark);
+        }
+        
+        .payment-number {
+            font-size: 13px;
+            color: var(--gray);
+        }
+
+        .vip-progress-section {
+            background: linear-gradient(135deg, rgba(0,102,255,0.1) 0%, rgba(0,82,204,0.1) 100%);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .vip-current {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .vip-current-badge {
+            font-size: 48px;
+            margin-bottom: 8px;
+        }
+        
+        .vip-current-name {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--dark);
+        }
+        
+        .progress-bar-container {
+            background: rgba(255,255,255,0.5);
+            height: 12px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--accent-light) 100%);
+            border-radius: 10px;
+            transition: width 0.5s;
+        }
+        
+        .progress-text {
+            text-align: center;
+            font-size: 13px;
+            color: var(--gray);
+            font-weight: 600;
+        }
+        
+        .next-level {
+            text-align: center;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .next-level-text {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 8px;
+        }
+        
+        .next-level-amount {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .logout-section {
+            padding: 0 20px 20px;
+        }
+        
+        .logout-btn {
+            background: transparent;
+            border: 2px solid var(--error);
+            color: var(--error);
+            padding: 16px;
+            width: 100%;
+            font-weight: 800;
+            font-size: 16px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: var(--error);
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .bottom-nav { 
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: var(--white);
+            display: flex;
+            justify-content: space-around;
+            padding: 14px 0;
+            border-top: 1px solid #e5e5e5;
+            z-index: 1001;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+        }
+        
+        .nav-link-custom { 
+            text-align: center;
+            color: var(--gray);
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 600;
+            flex: 1;
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 10px;
+        }
+        
+        .nav-link-custom i {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 6px;
+            transition: all 0.3s;
+        }
+        
+        .nav-link-custom:hover { color: var(--accent); }
+        
+        .nav-link-custom.active { 
+            color: var(--accent);
+        }
+        
+        .nav-link-custom.active i {
+            transform: scale(1.15);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(6px);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: var(--white);
+            border-radius: 24px;
+            padding: 28px;
+            max-width: 400px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .btn-cancel {
+            background: var(--light-gray);
+            color: var(--dark);
+            flex: 1;
+        }
+        
+        .btn-save {
+            background: var(--accent);
+            color: var(--white);
+            flex: 1;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--white);
+            padding: 16px 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            min-width: 280px;
+        }
+        
+        .toast.show {
+            display: flex;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .toast-icon {
+            font-size: 24px;
+        }
+        
+        .toast-message {
+            flex: 1;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--dark);
+        }
+        
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.success .toast-icon { color: var(--success); }
+        .toast.error { border-left: 4px solid var(--error); }
+        .toast.error .toast-icon { color: var(--error); }
+    </style>
+</head>
+<body>
+
+<div class="toast" id="toast">
+    <i class="toast-icon fas fa-check-circle"></i>
+    <div class="toast-message" id="toastMessage"></div>
+</div>
+
+<div class="top-nav">
+    <i class="fas fa-arrow-left back-btn" onclick="window.location.href='index.html'"></i>
+    <div class="nav-title">Mi Perfil</div>
+</div>
+
+<div id="authSection" style="display: none;">
+    <div class="auth-container">
+        <h4 id="authTitle">Iniciar Sesión</h4>
+        
+        <!-- REGISTRO: Campos adicionales -->
+        <div id="signupFields" style="display: none;">
+            <input type="text" id="signupName" class="form-control" placeholder="Nombre Completo *">
+            <input type="tel" id="signupPhone" class="form-control" placeholder="Teléfono *">
+        </div>
+        
+        <input type="email" id="email" class="form-control" placeholder="Correo Electrónico *">
+        <input type="password" id="pass" class="form-control" placeholder="Contraseña *">
+        
+        <button class="btn-primary" id="mainAuthBtn">INICIAR SESIÓN</button>
+        <div class="reset-link">
+            <a href="#" id="resetPasswordLink">¿Olvidaste tu contraseña?</a>
+        </div>
+        <p class="text-center text-muted small mt-3" id="toggleText">
+            ¿No tienes cuenta? 
+            <a href="#" style="color: var(--accent); text-decoration: none; font-weight: 700;" id="toggleAuthLink">Registrarse</a>
+        </p>
+    </div>
+</div>
+
+<div id="profileSection" style="display: none;">
+    <div class="profile-header">
+        <div class="profile-photo-container">
+            <img src="https://ui-avatars.com/api/?name=Usuario&background=0066FF&color=fff&size=200" class="profile-photo" id="profilePhoto">
+            <div class="edit-photo-btn" onclick="changePhoto()">
+                <i class="fas fa-camera"></i>
+            </div>
+            <input type="file" id="photoInput" accept="image/*" style="display: none;">
+        </div>
+        <div class="profile-name" id="profileName">Usuario</div>
+        <div class="profile-email" id="profileEmail">usuario@ejemplo.com</div>
+        <div class="vip-badge" id="vipBadge">
+            <i class="fas fa-medal"></i>
+            <span id="vipLevel">BRONCE</span>
+        </div>
+    </div>
+
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-value" id="totalOrders">0</div>
+            <div class="stat-label">Pedidos</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="totalSpent">$0</div>
+            <div class="stat-label">Gastado</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="totalWishlist">0</div>
+            <div class="stat-label">Favoritos</div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="vip-progress-section">
+            <div class="vip-current">
+                <div class="vip-current-badge">🥉</div>
+                <div class="vip-current-name">Nivel BRONCE</div>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="vipProgressBar" style="width: 0%"></div>
+            </div>
+            <div class="progress-text" id="progressText">$0 MXN de $100,000 MXN</div>
+            <div class="next-level">
+                <div class="next-level-text">Para alcanzar nivel PLATA necesitas</div>
+                <div class="next-level-amount" id="nextLevelAmount">$100,000 MXN</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <i class="fas fa-user"></i>
+            Información Personal
+        </div>
+        <div class="info-row">
+            <div class="info-label">Nombre Completo</div>
+            <div class="info-value" id="displayName">-</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Teléfono</div>
+            <div class="info-value" id="displayPhone">-</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Fecha de Nacimiento</div>
+            <div class="info-value" id="displayBirthday">-</div>
+        </div>
+        <div class="info-row">
+            <div class="info-label">Género</div>
+            <div class="info-value" id="displayGender">-</div>
+        </div>
+        <button class="edit-btn" onclick="editPersonalInfo()">
+            <i class="fas fa-edit"></i> Editar Información
+        </button>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <i class="fas fa-map-marker-alt"></i>
+            Direcciones Guardadas
+        </div>
+        <div id="addressesList"></div>
+        <button class="add-address-btn" onclick="addNewAddress()">
+            <i class="fas fa-plus"></i>
+            Agregar Nueva Dirección
+        </button>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <i class="fas fa-credit-card"></i>
+            Métodos de Pago
+        </div>
+        <div class="payment-card">
+            <div class="payment-icon" style="color: #10b981;">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="payment-info">
+                <div class="payment-type">Efectivo</div>
+                <div class="payment-number">Pago contra entrega</div>
+            </div>
+        </div>
+        <div id="savedPaymentsList"></div>
+        <button class="add-address-btn" onclick="addPaymentMethod()">
+            <i class="fas fa-plus"></i>
+            Agregar Método de Pago
+        </button>
+    </div>
+
+    <div class="section">
+        <div class="section-title">
+            <i class="fas fa-cog"></i>
+            Configuración
+        </div>
+        <div class="info-row" style="cursor: pointer;" onclick="changePassword()">
+            <div class="info-label"><i class="fas fa-lock"></i> Cambiar Contraseña</div>
+            <i class="fas fa-chevron-right" style="color: var(--gray);"></i>
+        </div>
+        <div class="info-row" style="cursor: pointer;">
+            <div class="info-label"><i class="fas fa-bell"></i> Notificaciones</div>
+            <label class="switch">
+                <input type="checkbox" id="notificationsToggle" checked>
+                <span class="slider-toggle"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="logout-section">
+        <button class="logout-btn" id="logoutBtn">
+            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+        </button>
+    </div>
+</div>
+
+<div class="modal-overlay" id="editInfoModal">
+    <div class="modal-content">
+        <div class="modal-title">Editar Información Personal</div>
+        <input type="text" id="editName" class="form-control" placeholder="Nombre Completo">
+        <input type="tel" id="editPhone" class="form-control" placeholder="Teléfono">
+        <input type="date" id="editBirthday" class="form-control">
+        <select id="editGender" class="form-control">
+            <option value="">Seleccionar Género</option>
+            <option value="Masculino">Masculino</option>
+            <option value="Femenino">Femenino</option>
+            <option value="Otro">Otro</option>
+        </select>
+        <div class="modal-buttons">
+            <button class="btn-sm btn-cancel" onclick="closeModal('editInfoModal')">Cancelar</button>
+            <button class="btn-sm btn-save" onclick="savePersonalInfo()">Guardar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="addAddressModal">
+    <div class="modal-content">
+        <div class="modal-title">Nueva Dirección</div>
+        <input type="text" id="newAddressName" class="form-control" placeholder="Nombre (ej: Casa, Oficina)">
+        <input type="text" id="newAddressStreet" class="form-control" placeholder="Calle y Número">
+        <input type="text" id="newAddressCity" class="form-control" placeholder="Ciudad">
+        <input type="text" id="newAddressState" class="form-control" placeholder="Estado">
+        <input type="text" id="newAddressZip" class="form-control" placeholder="Código Postal">
+        <input type="tel" id="newAddressPhone" class="form-control" placeholder="Teléfono de Contacto">
+        <div class="modal-buttons">
+            <button class="btn-sm btn-cancel" onclick="closeModal('addAddressModal')">Cancelar</button>
+            <button class="<button class="btn-sm btn-save" onclick="saveNewAddress()">Guardar</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="addPaymentModal">
+    <div class="modal-content">
+        <div class="modal-title">Agregar Método de Pago</div>
+        <select id="newPaymentType" class="form-control">
+            <option value="">Seleccionar Tipo</option>
+            <option value="BKASH">BKASH</option>
+            <option value="NAGAD">NAGAD</option>
+        </select>
+        <input type="text" id="newPaymentNumber" class="form-control" placeholder="Número de Cuenta">
+        <div class="modal-buttons">
+            <button class="btn-sm btn-cancel" onclick="closeModal('addPaymentModal')">Cancelar</button>
+            <button class="btn-sm btn-save" onclick="savePaymentMethod()">Guardar</button>
+        </div>
+    </div>
+</div>
+
+<div class="bottom-nav">
+    <a href="scorbk.html" class="nav-link-custom">
+        <i class="fas fa-home"></i>
+        Inicio
+    </a>
+    <a href="wishlist.html" class="nav-link-custom">
+        <i class="fas fa-heart"></i>
+        Favoritos
+    </a>
+    <a href="orders.html" class="nav-link-custom">
+        <i class="fas fa-box"></i>
+        Pedidos
+    </a>
+    <a href="profile.html" class="nav-link-custom active">
+        <i class="fas fa-user"></i>
+        Perfil
+    </a>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyBUnGhrGSe_AVqX-Ls7ysclg0puO3EyPtA",
+        authDomain: "dreward-e90d4.firebaseapp.com",
+        databaseURL: "https://dreward-e90d4-default-rtdb.firebaseio.com",
+        projectId: "dreward-e90d4",
+        storageBucket: "dreward-e90d4.firebasestorage.app",
+        messagingSenderId: "512902283407",
+        appId: "1:512902283407:web:5934e707f9bea93651f0fa"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+    const storage = firebase.storage();
+    
+    let isSignupMode = false;
+    let currentUser = null;
+    let userAddresses = [];
+    let editingAddressId = null;
+
+    const VIP_LEVELS = {
+        BRONZE: { min: 0, max: 100000, icon: '🥉', name: 'BRONCE', color: 'bronze' },
+        SILVER: { min: 100000, max: 300000, icon: '🥈', name: 'PLATA', color: 'silver' },
+        GOLD: { min: 300000, max: 600000, icon: '🥇', name: 'ORO', color: 'gold' },
+        PLATINUM: { min: 600000, max: Infinity, icon: '💎', name: 'PLATINO', color: 'platinum' }
+    };
+
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+        const icon = toast.querySelector('.toast-icon');
+        
+        toast.className = `toast ${type} show`;
+        toastMessage.textContent = message;
+        icon.className = `toast-icon fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}`;
+        
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            currentUser = user;
+            document.getElementById('authSection').style.display = 'none';
+            document.getElementById('profileSection').style.display = 'block';
+            loadUserProfile();
+            loadUserStats();
+            loadAddresses();
+            loadPaymentMethods();
+        } else {
+            document.getElementById('authSection').style.display = 'block';
+            document.getElementById('profileSection').style.display = 'none';
+        }
+    });
+
+    function toggleAuthMode(signup) {
+        isSignupMode = signup;
+        const signupFields = document.getElementById('signupFields');
+        
+        document.getElementById('authTitle').textContent = isSignupMode ? "Crear Cuenta" : "Iniciar Sesión";
+        document.getElementById('mainAuthBtn').textContent = isSignupMode ? "REGISTRARSE" : "INICIAR SESIÓN";
+        signupFields.style.display = isSignupMode ? 'block' : 'none';
+        
+        const toggleHTML = isSignupMode 
+            ? '¿Ya tienes cuenta? <a href="#" style="color: var(--accent); text-decoration: none; font-weight: 700;" id="toggleAuthLink">Iniciar Sesión</a>'
+            : '¿No tienes cuenta? <a href="#" style="color: var(--accent); text-decoration: none; font-weight: 700;" id="toggleAuthLink">Registrarse</a>';
+        
+        document.getElementById('toggleText').innerHTML = toggleHTML;
+        document.getElementById('toggleAuthLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleAuthMode(!isSignupMode);
+        });
+    }
+
+    function handleAuth() {
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('pass').value;
+        
+        if (!email || !password) {
+            showToast('Completa todos los campos', 'error');
+            return;
+        }
+        
+        if (password.length < 6) {
+            showToast('La contraseña debe tener mínimo 6 caracteres', 'error');
+            return;
+        }
+        
+        if (isSignupMode) {
+            const name = document.getElementById('signupName').value.trim();
+            const phone = document.getElementById('signupPhone').value.trim();
+            
+            if (!name || !phone) {
+                showToast('Completa nombre y teléfono', 'error');
+                return;
+            }
+            
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    showToast('¡Cuenta creada con éxito! 🎉', 'success');
+                    
+                    // Guardar perfil inicial con nombre y teléfono
+                    db.ref(`users/${userCredential.user.uid}/profile`).set({
+                        email: email,
+                        name: name,
+                        phone: phone,
+                        createdAt: Date.now()
+                    });
+                })
+                .catch(err => {
+                    if (err.code === 'auth/email-already-in-use') {
+                        showToast('Este correo ya está registrado', 'error');
+                    } else {
+                        showToast(err.message, 'error');
+                    }
+                });
+        } else {
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => showToast('¡Bienvenido de vuelta! 👋', 'success'))
+                .catch(err => showToast('Email o contraseña incorrectos', 'error'));
+        }
+    }
+
+    function resetPassword() {
+        const email = document.getElementById('email').value.trim();
+        if (!email) {
+            showToast('Ingresa tu email primero', 'error');
+            return;
+        }
+        
+        auth.sendPasswordResetEmail(email)
+            .then(() => showToast('Email de recuperación enviado 📧', 'success'))
+            .catch(err => showToast(err.message, 'error'));
+    }
+
+    function logout() {
+        if (confirm('¿Cerrar sesión?')) {
+            auth.signOut().then(() => {
+                showToast('Sesión cerrada', 'success');
+                window.location.href = 'index.html';
+            });
+        }
+    }
+
+    function loadUserProfile() {
+        db.ref(`users/${currentUser.uid}/profile`).on('value', snapshot => {
+            const profile = snapshot.val() || {};
+            
+            document.getElementById('profileEmail').textContent = currentUser.email;
+            document.getElementById('profileName').textContent = profile.name || 'Usuario';
+            document.getElementById('displayName').textContent = profile.name || '-';
+            document.getElementById('displayPhone').textContent = profile.phone || '-';
+            document.getElementById('displayBirthday').textContent = profile.birthday || '-';
+            document.getElementById('displayGender').textContent = profile.gender || '-';
+            
+            if (profile.photoURL) {
+                document.getElementById('profilePhoto').src = profile.photoURL;
+            } else {
+                const name = profile.name || 'Usuario';
+                document.getElementById('profilePhoto').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0066FF&color=fff&size=200`;
+            }
+        });
+    }
+
+    function loadUserStats() {
+        db.ref('orders').orderByChild('userId').equalTo(currentUser.uid).on('value', snapshot => {
+            let totalOrders = 0;
+            let totalSpent = 0;
+            
+            snapshot.forEach(child => {
+                totalOrders++;
+                const order = child.val();
+                const orderTotal = parseFloat(order.total) * 20;
+                totalSpent += orderTotal;
+            });
+            
+            document.getElementById('totalOrders').textContent = totalOrders;
+            document.getElementById('totalSpent').textContent = `$${totalSpent.toLocaleString('es-MX', {minimumFractionDigits: 0})}`;
+            
+            updateVIPLevel(totalSpent);
+        });
+        
+        db.ref(`wishlist/${currentUser.uid}`).on('value', snapshot => {
+            const count = snapshot.numChildren();
+            document.getElementById('totalWishlist').textContent = count;
+        });
+    }
+
+    function updateVIPLevel(totalSpent) {
+        let currentLevel = VIP_LEVELS.BRONZE;
+        let nextLevel = VIP_LEVELS.SILVER;
+        
+        if (totalSpent >= VIP_LEVELS.PLATINUM.min) {
+            currentLevel = VIP_LEVELS.PLATINUM;
+            nextLevel = null;
+        } else if (totalSpent >= VIP_LEVELS.GOLD.min) {
+            currentLevel = VIP_LEVELS.GOLD;
+            nextLevel = VIP_LEVELS.PLATINUM;
+        } else if (totalSpent >= VIP_LEVELS.SILVER.min) {
+            currentLevel = VIP_LEVELS.SILVER;
+            nextLevel = VIP_LEVELS.GOLD;
+        }
+        
+        const badge = document.getElementById('vipBadge');
+        badge.className = `vip-badge ${currentLevel.color}`;
+        badge.querySelector('span').textContent = currentLevel.name;
+        
+        document.querySelector('.vip-current-badge').textContent = currentLevel.icon;
+        document.querySelector('.vip-current-name').textContent = `Nivel ${currentLevel.name}`;
+        
+        if (nextLevel) {
+            const progress = ((totalSpent - currentLevel.min) / (nextLevel.min - currentLevel.min)) * 100;
+            document.getElementById('vipProgressBar').style.width = `${Math.min(progress, 100)}%`;
+            document.getElementById('progressText').textContent = `$${totalSpent.toLocaleString('es-MX')} MXN de $${nextLevel.min.toLocaleString('es-MX')} MXN`;
+            document.getElementById('nextLevelAmount').textContent = `$${(nextLevel.min - totalSpent).toLocaleString('es-MX')} MXN`;
+            document.querySelector('.next-level-text').textContent = `Para alcanzar nivel ${nextLevel.name} necesitas`;
+        } else {
+            document.getElementById('vipProgressBar').style.width = '100%';
+            document.getElementById('progressText').textContent = '¡Nivel máximo alcanzado!';
+            document.querySelector('.next-level').style.display = 'none';
+        }
+    }
+
+    function changePhoto() {
+        document.getElementById('photoInput').click();
+    }
+
+    document.getElementById('photoInput').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        if (file.size > 5000000) {
+            showToast('La imagen debe ser menor a 5MB', 'error');
+            return;
+        }
+        
+        const storageRef = storage.ref(`profile_photos/${currentUser.uid}`);
+        storageRef.put(file).then(snapshot => {
+            snapshot.ref.getDownloadURL().then(url => {
+                db.ref(`users/${currentUser.uid}/profile`).update({ photoURL: url });
+                showToast('Foto actualizada ✓', 'success');
+            });
+        }).catch(err => showToast('Error al subir foto', 'error'));
+    });
+
+    function editPersonalInfo() {
+        db.ref(`users/${currentUser.uid}/profile`).once('value', snapshot => {
+            const profile = snapshot.val() || {};
+            document.getElementById('editName').value = profile.name || '';
+            document.getElementById('editPhone').value = profile.phone || '';
+            document.getElementById('editBirthday').value = profile.birthday || '';
+            document.getElementById('editGender').value = profile.gender || '';
+            openModal('editInfoModal');
+        });
+    }
+
+    function savePersonalInfo() {
+        const data = {
+            name: document.getElementById('editName').value.trim(),
+            phone: document.getElementById('editPhone').value.trim(),
+            birthday: document.getElementById('editBirthday').value,
+            gender: document.getElementById('editGender').value
+        };
+        
+        if (!data.name || !data.phone) {
+            showToast('Completa todos los campos', 'error');
+            return;
+        }
+        
+        db.ref(`users/${currentUser.uid}/profile`).update(data)
+            .then(() => {
+                showToast('Información actualizada ✓', 'success');
+                closeModal('editInfoModal');
+            })
+            .catch(err => showToast('Error al guardar', 'error'));
+    }
+
+    function loadAddresses() {
+        db.ref(`addresses/${currentUser.uid}`).on('value', snapshot => {
+            const container = document.getElementById('addressesList');
+            container.innerHTML = '';
+            userAddresses = [];
+            
+            if (!snapshot.exists()) {
+                container.innerHTML = '<p style="text-align: center; color: var(--gray); padding: 20px;">No hay direcciones guardadas</p>';
+                return;
+            }
+            
+            snapshot.forEach(child => {
+                const addr = { id: child.key, ...child.val() };
+                userAddresses.push(addr);
+                
+                const card = document.createElement('div');
+                card.className = `address-card ${addr.primary ? 'primary' : ''}`;
+                card.innerHTML = `
+                    <div class="address-header">
+                        <div class="address-name">${addr.name}</div>
+                        ${addr.primary ? '<span class="primary-badge">Principal</span>' : ''}
+                    </div>
+                    <div class="address-text">
+                        ${addr.street}<br>
+                        ${addr.city}, ${addr.state} - CP ${addr.zip}<br>
+                        Tel: ${addr.phone}
+                    </div>
+                    <div class="address-actions">
+                        <button class="btn-sm btn-edit" onclick="editAddress('${addr.id}')">
+                            <i class="fas fa-edit"></i> Editar
+                        </button>
+                        ${!addr.primary ? `
+                            <button class="btn-sm btn-primary-toggle" onclick="setPrimaryAddress('${addr.id}')">
+                                <i class="fas fa-star"></i>
+                            </button>
+                        ` : ''}
+                        <button class="btn-sm btn-delete" onclick="deleteAddress('${addr.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        });
+    }
+
+    function addNewAddress() {
+        editingAddressId = null;
+        document.getElementById('newAddressName').value = '';
+        document.getElementById('newAddressStreet').value = '';
+        document.getElementById('newAddressCity').value = '';
+        document.getElementById('newAddressState').value = '';
+        document.getElementById('newAddressZip').value = '';
+        document.getElementById('newAddressPhone').value = '';
+        openModal('addAddressModal');
+    }
+
+    function editAddress(id) {
+        editingAddressId = id;
+        db.ref(`addresses/${currentUser.uid}/${id}`).once('value', snapshot => {
+            const addr = snapshot.val();
+            document.getElementById('newAddressName').value = addr.name;
+            document.getElementById('newAddressStreet').value = addr.street;
+            document.getElementById('newAddressCity').value = addr.city;
+            document.getElementById('newAddressState').value = addr.state;
+            document.getElementById('newAddressZip').value = addr.zip;
+            document.getElementById('newAddressPhone').value = addr.phone;
+            openModal('addAddressModal');
+        });
+    }
+
+    function saveNewAddress() {
+        const data = {
+            name: document.getElementById('newAddressName').value.trim(),
+            street: document.getElementById('newAddressStreet').value.trim(),
+            city: document.getElementById('newAddressCity').value.trim(),
+            state: document.getElementById('newAddressState').value.trim(),
+            zip: document.getElementById('newAddressZip').value.trim(),
+            phone: document.getElementById('newAddressPhone').value.trim(),
+            primary: userAddresses.length === 0
+        };
+        
+        if (!data.name || !data.street || !data.city || !data.state || !data.zip || !data.phone) {
+            showToast('Completa todos los campos', 'error');
+            return;
+        }
+        
+        if (editingAddressId) {
+            db.ref(`addresses/${currentUser.uid}/${editingAddressId}`).update(data)
+                .then(() => {
+                    showToast('Dirección actualizada ✓', 'success');
+                    closeModal('addAddressModal');
+                });
+        } else {
+            db.ref(`addresses/${currentUser.uid}`).push(data)
+                .then(() => {
+                    showToast('Dirección guardada ✓', 'success');
+                    closeModal('addAddressModal');
+                });
+        }
+    }
+
+    function setPrimaryAddress(id) {
+        userAddresses.forEach(addr => {
+            db.ref(`addresses/${currentUser.uid}/${addr.id}`).update({ primary: false });
+        });
+        db.ref(`addresses/${currentUser.uid}/${id}`).update({ primary: true })
+            .then(() => showToast('Dirección principal actualizada', 'success'));
+    }
+
+    function deleteAddress(id) {
+        if (confirm('¿Eliminar esta dirección?')) {
+            db.ref(`addresses/${currentUser.uid}/${id}`).remove()
+                .then(() => showToast('Dirección eliminada', 'success'));
+        }
+    }
+
+    function loadPaymentMethods() {
+        db.ref(`payment_methods/${currentUser.uid}`).on('value', snapshot => {
+            const container = document.getElementById('savedPaymentsList');
+            container.innerHTML = '';
+            
+            snapshot.forEach(child => {
+                const payment = child.val();
+                const card = document.createElement('div');
+                card.className = 'payment-card';
+                card.innerHTML = `
+                    <div class="payment-icon" style="color: ${payment.type === 'BKASH' ? '#E2136E' : '#FF6600'};">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <div class="payment-info">
+                        <div class="payment-type">${payment.type}</div>
+                        <div class="payment-number">***${payment.number.slice(-4)}</div>
+                    </div>
+                    <button class="btn-sm btn-delete" onclick="deletePayment('${child.key}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        });
+    }
+
+    function addPaymentMethod() {
+        document.getElementById('newPaymentType').value = '';
+        document.getElementById('newPaymentNumber').value = '';
+        openModal('addPaymentModal');
+    }
+
+    function savePaymentMethod() {
+        const type = document.getElementById('newPaymentType').value;
+        const number = document.getElementById('newPaymentNumber').value.trim();
+        
+        if (!type || !number) {
+            showToast('Completa todos los campos', 'error');
+            return;
+        }
+        
+        db.ref(`payment_methods/${currentUser.uid}`).push({ type, number })
+            .then(() => {
+                showToast('Método de pago agregado ✓', 'success');
+                closeModal('addPaymentModal');
+            });
+    }
+
+    function deletePayment(id) {
+        if (confirm('¿Eliminar este método de pago?')) {
+            db.ref(`payment_methods/${currentUser.uid}/${id}`).remove()
+                .then(() => showToast('Método eliminado', 'success'));
+        }
+    }
+
+    function changePassword() {
+        const newPass = prompt('Ingresa tu nueva contraseña (mínimo 6 caracteres):');
+        if (!newPass) return;
+        
+        if (newPass.length < 6) {
+            showToast('La contraseña debe tener mínimo 6 caracteres', 'error');
+            return;
+        }
+        
+        currentUser.updatePassword(newPass)
+            .then(() => showToast('Contraseña actualizada ✓', 'success'))
+            .catch(err => {
+                if (err.code === 'auth/requires-recent-login') {
+                    showToast('Por seguridad, vuelve a iniciar sesión', 'error');
+                    setTimeout(() => auth.signOut(), 2000);
+                } else {
+                    showToast('Error al cambiar contraseña', 'error');
+                }
+            });
+    }
+
+    function openModal(id) {
+        document.getElementById(id).style.display = 'flex';
+    }
+
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+    }
+
+    document.getElementById('mainAuthBtn').addEventListener('click', handleAuth);
+    document.getElementById('toggleAuthLink').addEventListener('click', (e) => {
+        e.preventDefault();
+        toggleAuthMode(!isSignupMode);
+    });
+    document.getElementById('resetPasswordLink').addEventListener('click', (e) => {
+        e.preventDefault();
+        resetPassword();
+    });
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                closeModal(overlay.id);
+            }
+        });
+    });
+</script>
+</body>
+</html>
