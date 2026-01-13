@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del Producto - Scorbak</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --accent: #0066FF;
+            --accent-dark: #0052CC;
+            --black: #000000;
+            --dark: #1A1A1A;
+            --gray: #666666;
+            --light-gray: #F5F5F5;
+            --white: #FFFFFF;
+            --success: #10b981;
+            --error: #ef4444;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            background: var(--white);
+            font-family: 'Inter', sans-serif;
+            color: var(--dark);
+        }
+        
+        .detail-header {
+            padding: 20px;
+            background: var(--black);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .detail-header i {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .product-image {
+            width: 100%;
+            height: 450px;
+            object-fit: contain;
+            background: var(--light-gray);
+        }
+        
+        .detail-content {
+            padding: 28px 20px;
+        }
+        
+        .product-price {
+            color: var(--accent);
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 12px;
+        }
+        
+        .product-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--black);
+            margin-bottom: 28px;
+            line-height: 1.4;
+        }
+        
+        .option-section {
+            background: var(--light-gray);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .option-label {
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 14px;
+            display: block;
+        }
+        
+        .opt-btn {
+            border: 2px solid #ddd;
+            padding: 12px 24px;
+            margin: 6px 6px 6px 0;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            background: var(--white);
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--dark);
+        }
+        
+        .opt-btn:hover {
+            border-color: var(--accent);
+            background: rgba(0,102,255,0.05);
+        }
+        
+        .opt-btn.selected {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: var(--white);
+            box-shadow: 0 4px 12px rgba(0,102,255,0.3);
+        }
+        
+        .qty-control {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--light-gray);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .qty-buttons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .qty-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            border: 2px solid #ddd;
+            background: var(--white);
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .qty-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        .btn-add-cart, .btn-buy-now {
+            color: var(--white);
+            border: none;
+            padding: 18px;
+            width: 100%;
+            font-weight: 800;
+            font-size: 16px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .btn-add-cart {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+            box-shadow: 0 6px 20px rgba(0,102,255,0.4);
+        }
+        
+        .btn-add-cart:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,102,255,0.5);
+        }
+
+        .btn-buy-now {
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+            box-shadow: 0 6px 20px rgba(16,185,129,0.4);
+        }
+
+        .btn-buy-now:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(16,185,129,0.5);
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--white);
+            padding: 16px 20px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .toast.show {
+            display: flex;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--error); }
+        
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* CHECKOUT MODAL */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(6px);
+            z-index: 3000;
+            display: none;
+        }
+
+        .modal-overlay.show {
+            display: block;
+        }
+
+        .checkout-modal {
+            position: fixed;
+            bottom: -100%;
+            left: 0;
+            width: 100%;
+            height: 90%;
+            background: var(--white);
+            z-index: 3001;
+            border-radius: 28px 28px 0 0;
+            box-shadow: 0 -8px 40px rgba(0,0,0,0.2);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+        }
+
+        .checkout-modal.show {
+            bottom: 0;
+        }
+
+        .modal-header {
+            padding: 24px 20px;
+            background: linear-gradient(135deg, var(--black) 0%, #2d2d2d 100%);
+            color: var(--white);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-radius: 28px 28px 0 0;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .modal-header i {
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-header h4 {
+            font-weight: 800;
+            flex: 1;
+        }
+
+        .modal-content-body {
+            padding: 24px 20px;
+        }
+
+        .form-section {
+            background: var(--light-gray);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--accent);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            transition: all 0.3s;
+            background: var(--white);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(0,102,255,0.1);
+        }
+
+        .payment-option {
+            background: var(--white);
+            border: 2px solid #ddd;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .payment-option:hover {
+            border-color: var(--accent);
+            background: rgba(0,102,255,0.05);
+        }
+
+        .payment-option.selected {
+            border-color: var(--accent);
+            background: rgba(0,102,255,0.1);
+        }
+
+        .payment-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--light-gray);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .payment-info {
+            flex: 1;
+        }
+
+        .payment-name {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--dark);
+        }
+
+        .payment-desc {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .order-summary {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+            padding-top: 16px;
+            margin-top: 8px;
+            border-top: 2px solid var(--light-gray);
+        }
+
+        .summary-label {
+            font-size: 14px;
+            color: var(--gray);
+            font-weight: 600;
+        }
+
+        .summary-value {
+            font-size: 14px;
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        .summary-row:last-child .summary-label,
+        .summary-row:last-child .summary-value {
+            font-size: 18px;
+            color: var(--accent);
+        }
+
+        .btn-confirm-order {
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+            color: var(--white);
+            border: none;
+            padding: 18px;
+            width: 100%;
+            font-weight: 800;
+            font-size: 16px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 6px 20px rgba(16,185,129,0.4);
+            text-transform: uppercase;
+        }
+
+        .btn-confirm-order:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(16,185,129,0.5);
+        }
+
+        .btn-confirm-order:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+<div class="toast" id="toast">
+    <i class="fas fa-check-circle" style="color: #10b981; font-size: 24px;"></i>
+    <div style="flex: 1; font-weight: 600; font-size: 14px;" id="toastMessage"></div>
+</div>
+
+<div class="detail-header">
+    <i class="fas fa-arrow-left" onclick="window.history.back()"></i>
+    <h6 style="margin: 0; font-weight: 600; font-size: 16px;">Detalles del Producto</h6>
+    <i class="fas fa-heart" id="wishlistIcon" style="color: var(--white);"></i>
+</div>
+
+<img id="productImage" class="product-image" alt="Producto">
+
+<div class="detail-content">
+    <h2 class="product-price" id="productPrice"></h2>
+    <p class="product-title" id="productTitle"></p>
+    
+    <div class="option-section">
+        <label class="option-label">Colores Disponibles</label>
+        <div id="colorOptions"></div>
+    </div>
+    
+    <div class="option-section">
+        <label class="option-label">Seleccionar Talla</label>
+        <div id="sizeOptions"></div>
+    </div>
+    
+    <div class="qty-control">
+        <span style="font-weight: 700; font-size: 16px;">Cantidad</span>
+        <div class="qty-buttons">
+            <button class="qty-btn" onclick="updateQty(-1)">−</button>
+            <span id="quantity" style="font-size: 20px; font-weight: 800; min-width: 40px; text-align: center;">1</span>
+            <button class="qty-btn" onclick="updateQty(1)">+</button>
+        </div>
+    </div>
+    
+    <button class="btn-add-cart" onclick="addToCart()">
+        <i class="fas fa-cart-plus"></i> Agregar al Carrito
+    </button>
+    
+    <button class="btn-buy-now" onclick="buyNow()">
+        <i class="fas fa-bolt"></i> Comprar Ahora
+    </button>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal-overlay" id="checkoutOverlay"></div>
+<div class="checkout-modal" id="checkoutModal">
+    <div class="modal-header">
+        <i class="fas fa-times" onclick="closeCheckout()"></i>
+        <h4>Finalizar Compra</h4>
+    </div>
+    <div class="modal-content-body">
+        <!-- Customer Info -->
+        <div class="form-section">
+            <div class="section-title">
+                <i class="fas fa-user"></i>
+                Información Personal
+            </div>
+            <input type="text" id="customerName" class="form-control" placeholder="Nombre Completo *" required>
+            <input type="tel" id="customerPhone" class="form-control" placeholder="Teléfono *" required>
+            <input type="email" id="customerEmail" class="form-control" placeholder="Correo Electrónico (opcional)">
+        </div>
+
+        <!-- Shipping Address -->
+        <div class="form-section">
+            <div class="section-title">
+                <i class="fas fa-map-marker-alt"></i>
+                Dirección de Envío
+            </div>
+            <input type="text" id="shippingAddress" class="form-control" placeholder="Calle y Número *" required>
+            <input type="text" id="shippingCity" class="form-control" placeholder="Ciudad *" required>
+            <input type="text" id="shippingState" class="form-control" placeholder="Estado *" required>
+            <input type="text" id="shippingZip" class="form-control" placeholder="Código Postal *" required>
+        </div>
+
+        <!-- Payment Method -->
+        <div class="form-section">
+            <div class="section-title">
+                <i class="fas fa-credit-card"></i>
+                Método de Pago
+            </div>
+            <div class="payment-option" data-method="cash" onclick="selectPayment('cash')">
+                <div class="payment-icon" style="color: var(--success);">
+                    <i class="fas fa-money-bill-wave"></i>
+                </div>
+                <div class="payment-info">
+                    <div class="payment-name">Efectivo</div>
+                    <div class="payment-desc">Pago contra entrega</div>
+                </div>
+            </div>
+            <div class="payment-option" data-method="bkash" onclick="selectPayment('bkash')">
+                <div class="payment-icon" style="color: #E2136E;">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <div class="payment-info">
+                    <div class="payment-name">BKASH</div>
+                    <div class="payment-desc">Pago móvil</div>
+                </div>
+            </div>
+            <div class="payment-option" data-method="nagad" onclick="selectPayment('nagad')">
+                <div class="payment-icon" style="color: #FF6600;">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <div class="payment-info">
+                    <div class="payment-name">NAGAD</div>
+                    <div class="payment-desc">Pago móvil</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Details (for BKASH/NAGAD) -->
+        <div class="form-section" id="paymentDetails" style="display: none;">
+            <div class="section-title">
+                <i class="fas fa-receipt"></i>
+                Detalles de Pago
+            </div>
+            <input type="text" id="senderNumber" class="form-control" placeholder="Número de remitente *">
+            <input type="text" id="transactionId" class="form-control" placeholder="ID de transacción *">
+        </div>
+
+        <!-- Order Summary -->
+        <div class="order-summary">
+            <div class="section-title">
+                <i class="fas fa-file-invoice"></i>
+                Resumen del Pedido
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Producto</span>
+                <span class="summary-value" id="summaryProduct">-</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Color</span>
+                <span class="summary-value" id="summaryColor">-</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Talla</span>
+                <span class="summary-value" id="summarySize">-</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Cantidad</span>
+                <span class="summary-value" id="summaryQty">-</span>
+            </div>
+            <div class="summary-row">
+                <span class="summary-label">Total</span>
+                <span class="summary-value" id="summaryTotal">$0.00</span>
+            </div>
+        </div>
+
+        <button class="btn-confirm-order" onclick="confirmOrder()">
+            <i class="fas fa-check-circle"></i> Confirmar Pedido
+        </button>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyBUnGhrGSe_AVqX-Ls7ysclg0puO3EyPtA",
+        authDomain: "dreward-e90d4.firebaseapp.com",
+        databaseURL: "https://dreward-e90d4-default-rtdb.firebaseio.com",
+        projectId: "dreward-e90d4",
+        storageBucket: "dreward-e90d4.firebasestorage.app",
+        messagingSenderId: "512902283407",
+        appId: "1:512902283407:web:5934e707f9bea93651f0fa"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+    
+    let currentProduct = null;
+    let selectedColor = '';
+    let selectedSize = '';
+    let selectedQty = 1;
+    let selectedPaymentMethod = '';
+
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+        const icon = toast.querySelector('i');
+        
+        toast.className = `toast ${type} show`;
+        toastMessage.textContent = message;
+        icon.className = `fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}`;
+        icon.style.color = type === 'success' ? '#10b981' : '#ef4444';
+        
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    const productData = localStorage.getItem('selected_product');
+    if (!productData) {
+        window.location.href = 'scorbk.html';
+    } else {
+        currentProduct = JSON.parse(productData);
+        loadProductDetails();
+    }
+
+    function loadProductDetails() {
+        const priceMXN = parseFloat(currentProduct.price) * 20;
+        
+        document.getElementById('productImage').src = currentProduct.image;
+        document.getElementById('productPrice').textContent = `$${priceMXN.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+        document.getElementById('productTitle').textContent = currentProduct.name;
+        
+        renderOptions('colorOptions', currentProduct.colors, 'color');
+        renderOptions('sizeOptions', currentProduct.sizes, 'size');
+        
+        checkWishlist();
+    }
+
+    function renderOptions(containerId, optionsStr, type) {
+        const container = document.getElementById(containerId);
+        container.innerHTML = '';
+        
+        if (!optionsStr) {
+            container.innerHTML = '<span style="color: var(--gray); font-size: 13px;">No especificado</span>';
+            return;
+        }
+        
+        const options = optionsStr.split(',').map(o => o.trim()).filter(o => o);
+        options.forEach(option => {
+            const btn = document.createElement('button');
+            btn.className = 'opt-btn';
+            btn.textContent = option;
+            btn.addEventListener('click', () => selectOption(btn, type, option));
+            container.appendChild(btn);
+        });
+    }
+
+    function selectOption(btn, type, value) {
+        const container = btn.parentElement;
+        container.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        
+        if (type === 'color') selectedColor = value;
+        else if (type === 'size') selectedSize = value;
+    }
+
+    function updateQty(change) {
+        selectedQty = Math.max(1, selectedQty + change);
+        document.getElementById('quantity').textContent = selectedQty;
+    }
+
+    function addToCart() {
+        if (!selectedColor || !selectedSize) {
+            showToast('Por favor selecciona color y talla', 'error');
+            return;
+        }
+        
+        const cart = JSON.parse(localStorage.getItem('scorbak_cart') || '[]');
+        const existing = cart.find(item => 
+            item.id === currentProduct.id && 
+            item.color === selectedColor && 
+            item.size === selectedSize
+        );
+        
+        if (existing) {
+            existing.quantity += selectedQty;
+        } else {
+            cart.push({
+                id: currentProduct.id,
+                name: currentProduct.name,
+                price: currentProduct.price,
+                image: currentProduct.image,
+                color: selectedColor,
+                size: selectedSize,
+                quantity: selectedQty
+            });
+        }
+        
+        localStorage.setItem('scorbak_cart', JSON.stringify(cart));
+        showToast('¡Agregado al carrito! 🛒', 'success');
+        
+        setTimeout(() => {
+            window.location.href = 'scorbk.html';
+        }, 1500);
+    }
+
+    function buyNow() {
+        if (!selectedColor || !selectedSize) {
+            showToast('Por favor selecciona color y talla', 'error');
+            return;
+        }
+
+        // Update summary
+        const priceMXN = parseFloat(currentProduct.price) * 20;
+        const totalMXN = priceMXN * selectedQty;
+        
+        document.getElementById('summaryProduct').textContent = currentProduct.name;
+        document.getElementById('summaryColor').textContent = selectedColor;
+        document.getElementById('summarySize').textContent = selectedSize;
+        document.getElementById('summaryQty').textContent = selectedQty;
+        document.getElementById('summaryTotal').textContent = `$${totalMXN.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+
+        // Open checkout modal
+        document.getElementById('checkoutOverlay').classList.add('show');
+        document.getElementById('checkoutModal').classList.add('show');
+    }
+
+    function closeCheckout() {
+        document.getElementById('checkoutOverlay').classList.remove('show');
+        document.getElementById('checkoutModal').classList.remove('show');
+    }
+
+    function selectPayment(method) {
+        selectedPaymentMethod = method;
+        
+        // Update UI
+        document.querySelectorAll('.payment-option').forEach(opt => {
+            opt.classList.remove('selected');
+        });
+        document.querySelector(`[data-method="${method}"]`).classList.add('selected');
+
+        // Show/hide payment details
+        const paymentDetails = document.getElementById('paymentDetails');
+        if (method === 'bkash' || method === 'nagad') {
+            paymentDetails.style.display = 'block';
+        } else {
+            paymentDetails.style.display = 'none';
+        }
+    }
+
+    function confirmOrder() {
+        // Validate fields
+        const customerName = document.getElementById('customerName').value.trim();
+        const customerPhone = document.getElementById('customerPhone').value.trim();
+        const shippingAddress = document.getElementById('shippingAddress').value.trim();
+        const shippingCity = document.getElementById('shippingCity').value.trim();
+        const shippingState = document.getElementById('shippingState').value.trim();
+        const shippingZip = document.getElementById('shippingZip').value.trim();
+
+        if (!customerName || !customerPhone || !shippingAddress || !shippingCity || !shippingState || !shippingZip) {
+            showToast('Por favor completa todos los campos obligatorios', 'error');
+            return;
+        }
+
+        if (!selectedPaymentMethod) {
+            showToast('Por favor selecciona un método de pago', 'error');
+            return;
+        }
+
+        // Validate payment details for BKASH/NAGAD
+        let senderNum = '';
+        let trxId = '';
+        if (selectedPaymentMethod === 'bkash' || selectedPaymentMethod === 'nagad') {
+            senderNum = document.getElementById('senderNumber').value.trim();
+            trxId = document.getElementById('transactionId').value.trim();
+            
+            if (!senderNum || !trxId) {
+                showToast('Por favor completa los detalles de pago', 'error');
+                return;
+            }
+        }
+
+        // Check if user is logged in
+        if (!auth.currentUser) {
+            showToast('Debes iniciar sesión para hacer un pedido', 'error');
+            setTimeout(() => {
+                window.location.href = 'profile.html';
+            }, 2000);
+            return;
+        }
+
+        // Create order
+        const priceTaka = parseFloat(currentProduct.price);
+        const totalTaka = priceTaka * selectedQty;
+        
+        const orderData = {
+            userId: auth.currentUseruserId: auth.currentUser.uid,
+            userEmail: auth.currentUser.email,
+            customerName: customerName,
+            phone: customerPhone,
+            email: document.getElementById('customerEmail').value.trim() || auth.currentUser.email,
+            address: `${shippingAddress}, ${shippingCity}, ${shippingState}, CP ${shippingZip}`,
+            paymentMethod: selectedPaymentMethod === 'cash' ? 'Cash On Delivery' : selectedPaymentMethod.toUpperCase(),
+            senderNum: senderNum || 'N/A',
+            trxId: trxId || 'N/A',
+            items: [{
+                id: currentProduct.id,
+                name: currentProduct.name,
+                price: currentProduct.price,
+                image: currentProduct.image,
+                color: selectedColor,
+                size: selectedSize,
+                quantity: selectedQty
+            }],
+            total: totalTaka.toString(),
+            status: 'Processing',
+            timestamp: Date.now(),
+            dateStr: new Date().toLocaleString('es-MX', { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            })
+        };
+
+        // Save to Firebase
+        db.ref('orders').push(orderData)
+            .then(() => {
+                showToast('¡Pedido realizado con éxito! 🎉', 'success');
+                closeCheckout();
+                
+                // Clear form
+                document.getElementById('customerName').value = '';
+                document.getElementById('customerPhone').value = '';
+                document.getElementById('customerEmail').value = '';
+                document.getElementById('shippingAddress').value = '';
+                document.getElementById('shippingCity').value = '';
+                document.getElementById('shippingState').value = '';
+                document.getElementById('shippingZip').value = '';
+                document.getElementById('senderNumber').value = '';
+                document.getElementById('transactionId').value = '';
+                
+                setTimeout(() => {
+                    window.location.href = 'orders.html';
+                }, 2000);
+            })
+            .catch(error => {
+                console.error('Error creating order:', error);
+                showToast('Error al crear el pedido. Intenta de nuevo.', 'error');
+            });
+    }
+
+    function checkWishlist() {
+        if (!auth.currentUser) return;
+        
+        db.ref(`wishlist/${auth.currentUser.uid}`)
+            .orderByChild('productId')
+            .equalTo(currentProduct.id)
+            .once('value', snapshot => {
+                const icon = document.getElementById('wishlistIcon');
+                if (snapshot.exists()) {
+                    icon.className = 'fas fa-heart';
+                    icon.style.color = '#ef4444';
+                } else {
+                    icon.className = 'far fa-heart';
+                    icon.style.color = 'var(--white)';
+                }
+            });
+    }
+
+    document.getElementById('wishlistIcon').addEventListener('click', () => {
+        if (!auth.currentUser) {
+            window.location.href = 'profile.html';
+            return;
+        }
+        
+        db.ref(`wishlist/${auth.currentUser.uid}`)
+            .orderByChild('productId')
+            .equalTo(currentProduct.id)
+            .once('value', snapshot => {
+                if (snapshot.exists()) {
+                    snapshot.forEach(child => child.ref.remove());
+                    showToast('Eliminado de favoritos', 'success');
+                } else {
+                    db.ref(`wishlist/${auth.currentUser.uid}`).push({
+                        productId: currentProduct.id,
+                        timestamp: Date.now()
+                    });
+                    showToast('Agregado a favoritos ❤️', 'success');
+                }
+                checkWishlist();
+            });
+    });
+
+    // Close modal on overlay click
+    document.getElementById('checkoutOverlay').addEventListener('click', closeCheckout);
+
+    auth.onAuthStateChanged(user => {
+        if (user) checkWishlist();
+    });
+</script>
+</body>
+</html>

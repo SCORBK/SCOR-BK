@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Pedidos - Scorbak</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --accent: #0066FF;
+            --accent-light: #4D94FF;
+            --accent-dark: #0052CC;
+            --black: #000000;
+            --dark: #1A1A1A;
+            --gray: #666666;
+            --light-gray: #F5F5F5;
+            --white: #FFFFFF;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            font-family: 'Inter', -apple-system, sans-serif;
+            padding-bottom: 80px;
+            overflow-x: hidden;
+            color: var(--dark);
+        }
+        
+        .top-nav { 
+            background: linear-gradient(135deg, var(--black) 0%, #2d2d2d 100%);
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .back-btn {
+            color: var(--white);
+            font-size: 24px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        
+        .back-btn:active { transform: scale(0.9); }
+        
+        .nav-title { 
+            color: var(--white);
+            font-weight: 800;
+            font-size: 20px;
+            flex: 1;
+        }
+
+        .orders-container {
+            padding: 20px;
+        }
+        
+        .order-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 5px solid;
+        }
+        
+        .order-card:hover {
+            transform: translateX(4px);
+            box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+        }
+        
+        .order-card.processing { border-left-color: var(--warning); }
+        .order-card.shipped { border-left-color: var(--info); }
+        .order-card.delivered { border-left-color: var(--success); }
+        .order-card.cancelled { border-left-color: var(--error); }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+        
+        .order-id {
+            font-size: 12px;
+            color: var(--gray);
+            font-weight: 600;
+        }
+        
+        .order-status {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--white);
+        }
+        
+        .order-status.processing { background: var(--warning); }
+        .order-status.shipped { background: var(--info); }
+        .order-status.delivered { background: var(--success); }
+        .order-status.cancelled { background: var(--error); }
+        
+        .order-items {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+        
+        .order-total {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+        
+        .order-date {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(6px);
+            z-index: 2000;
+            display: none;
+        }
+        
+        .modal-overlay.show {
+            display: block;
+        }
+        
+        .order-detail-modal {
+            position: fixed;
+            bottom: -100%;
+            left: 0;
+            width: 100%;
+            height: 90%;
+            background: var(--white);
+            z-index: 2001;
+            border-radius: 28px 28px 0 0;
+            box-shadow: 0 -8px 40px rgba(0,0,0,0.2);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+        }
+        
+        .order-detail-modal.show {
+            bottom: 0;
+        }
+        
+        .detail-header {
+            padding: 24px 20px;
+            background: linear-gradient(135deg, var(--black) 0%, #2d2d2d 100%);
+            color: var(--white);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-radius: 28px 28px 0 0;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .detail-header i {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .detail-header h4 {
+            font-weight: 800;
+            flex: 1;
+        }
+        
+        .detail-content {
+            padding: 24px 20px;
+        }
+
+        .timeline-section {
+            background: var(--light-gray);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            color: var(--accent);
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: #ddd;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 24px;
+            padding-bottom: 8px;
+        }
+        
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: -32px;
+            top: 2px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #ddd;
+            border: 3px solid var(--white);
+        }
+        
+        .timeline-item.completed .timeline-dot {
+            background: var(--success);
+        }
+        
+        .timeline-item.active .timeline-dot {
+            background: var(--accent);
+            box-shadow: 0 0 0 4px rgba(0,102,255,0.2);
+        }
+        
+        .timeline-title {
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--dark);
+            margin-bottom: 4px;
+        }
+        
+        .timeline-time {
+            font-size: 12px;
+            color: var(--gray);
+        }
+        
+        .timeline-item.pending .timeline-title,
+        .timeline-item.pending .timeline-time {
+            color: #ccc;
+        }
+
+        .tracking-section {
+            background: linear-gradient(135deg, rgba(0,102,255,0.1) 0%, rgba(0,82,204,0.1) 100%);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .tracking-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+        
+        .tracking-location {
+            background: var(--white);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .location-title {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--dark);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .location-title i {
+            color: var(--accent);
+        }
+        
+        .location-address {
+            font-size: 14px;
+            color: var(--gray);
+            line-height: 1.6;
+        }
+        
+        .location-distance {
+            font-size: 13px;
+            color: var(--accent);
+            font-weight: 700;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .map-container {
+            width: 100%;
+            height: 250px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+        
+        .map-buttons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-map {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-google-maps {
+            background: var(--accent);
+            color: var(--white);
+        }
+        
+        .btn-google-maps:hover {
+            background: var(--accent-dark);
+        }
+
+        .info-section {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            font-size: 14px;
+            color: var(--gray);
+            font-weight: 600;
+        }
+        
+        .info-value {
+            font-size: 14px;
+            color: var(--dark);
+            font-weight: 700;
+            text-align: right;
+        }
+
+        .items-list {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .order-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .order-item:last-child {
+            border-bottom: none;
+        }
+        
+        .item-image {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+        
+        .item-info {
+            flex: 1;
+        }
+        
+        .item-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--dark);
+            margin-bottom: 4px;
+        }
+        
+        .item-meta {
+            font-size: 12px;
+            color: var(--gray);
+        }
+        
+        .item-price {
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--accent);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .btn-action {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        
+        .btn-cancel {
+            background: transparent;
+            border: 2px solid var(--error);
+            color: var(--error);
+        }
+        
+        .btn-cancel:hover {
+            background: var(--error);
+            color: var(--white);
+        }
+        
+        .btn-reorder {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+            color: var(--white);
+            box-shadow: 0 4px 12px rgba(0,102,255,0.3);
+        }
+        
+        .btn-reorder:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,102,255,0.4);
+        }
+
+        .bottom-nav { 
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: var(--white);
+            display: flex;
+            justify-content: space-around;
+            padding: 14px 0;
+            border-top: 1px solid #e5e5e5;
+            z-index: 1001;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+        }
+        
+        .nav-link-custom { 
+            text-align: center;
+            color: var(--gray);
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 600;
+            flex: 1;
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 10px;
+        }
+        
+        .nav-link-custom i {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 6px;
+            transition: all 0.3s;
+        }
+        
+        .nav-link-custom:hover { color: var(--accent); }
+        
+        .nav-link-custom.active { 
+            color: var(--accent);
+        }
+        
+        .nav-link-custom.active i {
+            transform: scale(1.15);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--gray);
+        }
+        
+        .empty-state i {
+            font-size: 72px;
+            margin-bottom: 20px;
+            opacity: 0.4;
+        }
+        
+        .empty-state h5 {
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .empty-state p {
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray);
+            font-size: 15px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+<div class="top-nav">
+    <i class="fas fa-arrow-left back-btn" onclick="window.location.href='scorbk.html'"></i>
+    <div class="nav-title">Mis Pedidos</div>
+</div>
+
+<div class="orders-container" id="ordersContainer">
+    <div class="loading">Cargando pedidos...</div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay"></div>
+<div class="order-detail-modal" id="orderDetailModal">
+    <div class="detail-header">
+        <i class="fas fa-times" onclick="closeOrderDetail()"></i>
+        <h4>Detalles del Pedido</h4>
+    </div>
+    <div class="detail-content" id="detailContent"></div>
+</div>
+
+<div class="bottom-nav">
+    <a href="scorbk.html" class="nav-link-custom">
+        <i class="fas fa-home"></i>
+        Inicio
+    </a>
+    <a href="wishlist.html" class="nav-link-custom">
+        <i class="fas fa-heart"></i>
+        Favoritos
+    </a>
+    <a href="orders.html" class="nav-link-custom active">
+        <i class="fas fa-box"></i>
+        Pedidos
+    </a>
+    <a href="profile.html" class="nav-link-custom">
+        <i class="fas fa-user"></i>
+        Perfil
+    </a>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyBUnGhrGSe_AVqX-Ls7ysclg0puO3EyPtA",
+        authDomain: "dreward-e90d4.firebaseapp.com",
+        databaseURL: "https://dreward-e90d4-default-rtdb.firebaseio.com",
+        projectId: "dreward-e90d4",
+        storageBucket: "dreward-e90d4.firebasestorage.app",
+        messagingSenderId: "512902283407",
+        appId: "1:512902283407:web:5934e707f9bea93651f0fa"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+    
+    let currentOrder = null;
+    let userLocation = null;
+
+    const STATUS_TRANSLATIONS = {
+        'Processing': 'Procesando',
+        'Shipped': 'Enviado',
+        'Delivered': 'Entregado',
+        'Cancelled': 'Cancelado'
+    };
+
+    function getUserLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                position => {
+                    userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                },
+                error => console.log('Location not available')
+            );
+        }
+    }
+
+    function calculateDistance(lat1, lon1, lat2, lon2) {
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                  Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        const distance = R * c;
+        return distance.toFixed(1);
+    }
+
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            loadOrders();
+            getUserLocation();
+        } else {
+            showEmptyState('login');
+        }
+    });
+
+    function loadOrders() {
+        const container = document.getElementById('ordersContainer');
+        container.innerHTML = '<div class="loading">Cargando pedidos...</div>';
+        
+        db.ref('orders')
+            .orderByChild('userId')
+            .equalTo(auth.currentUser.uid)
+            .on('value', snapshot => {
+                container.innerHTML = '';
+                
+                if (!snapshot.exists()) {
+                    showEmptyState('no-orders');
+                    return;
+                }
+                
+                const orders = [];
+                snapshot.forEach(child => {
+                    orders.push({ id: child.key, ...child.val() });
+                });
+                
+                orders.sort((a, b) => b.timestamp - a.timestamp);
+                
+                orders.forEach(order => {
+                    renderOrderCard(order);
+                });
+            });
+    }
+
+    function renderOrderCard(order) {
+        const container = document.getElementById('ordersContainer');
+        const statusClass = order.status.toLowerCase();
+        const statusText = STATUS_TRANSLATIONS[order.status] || order.status;
+        
+        const totalMXN = parseFloat(order.total) * 20;
+        
+        const card = document.createElement('div');
+        card.className = `order-card ${statusClass}`;
+        card.innerHTML = `
+            <div class="order-header">
+                <div class="order-id">Pedido #${order.id.substring(0, 8).toUpperCase()}</div>
+                <div class="order-status ${statusClass}">${statusText}</div>
+            </div>
+            <div class="order-items">
+                ${order.items ? `${order.items.length} producto${order.items.length > 1 ? 's' : ''}` : order.productName || 'Pedido'}
+            </div>
+            <div class="order-total">$${totalMXN.toLocaleString('es-MX', {minimumFractionDigits: 2})}</div>
+            <div class="order-date">${order.dateStr}</div>
+        `;
+        
+        card.addEventListener('click', () => showOrderDetail(order));
+        container.appendChild(card);
+    }
+
+    function showOrderDetail(order) {
+        currentOrder = order;
+        const content = document.getElementById('detailContent');
+        const totalMXN = parseFloat(order.total) * 20;
+        const statusText = STATUS_TRANSLATIONS[order.status] || order.status;
+        
+        let trackingHTML = '';
+        
+        if (order.tracking) {
+            const track = order.tracking;
+            let distanceHTML = '';
+            
+            if (userLocation && track.latitude && track.longitude) {
+                const distance = calculateDistance(
+                    userLocation.lat,
+                    userLocation.lng,
+                    parseFloat(track.latitude),
+                    parseFloat(track.longitude)
+                );
+                distanceHTML = `
+                    <div class="location-distance">
+                        <i class="fas fa-route"></i>
+                        Tu pedido está a ${distance} km de ti
+                    </div>
+                `;
+            }
+            
+            trackingHTML = `
+                <div class="tracking-section">
+                    <div class="section-title">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Ubicación del Pedido
+                    </div>
+                    
+                    ${track.imageUrl ? `
+                        <img src="${track.imageUrl}" class="tracking-image" alt="Ubicación del paquete">
+                    ` : ''}
+                    
+                    <div class="tracking-location">
+                        <div class="location-title">
+                            <i class="fas fa-map-pin"></i>
+                            ${track.locationName || 'Ubicación Actual'}
+                        </div>
+                        <div class="location-address">${track.address || 'Dirección no disponible'}</div>
+                        ${distanceHTML}
+                    </div>
+                    
+                    ${track.latitude && track.longitude ? `
+                        <div class="map-container">
+                            <iframe
+                                width="100%"
+                                height="100%"
+                                frameborder="0"
+                                style="border:0"
+                                src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBT_v71vgbE63RgmVJyvPGEXu-v2_7puLk&q=${track.latitude},${track.longitude}&zoom=15"
+                                allowfullscreen>
+                            </iframe>
+                        </div>
+                        
+                        <div class="map-buttons">
+                            <button class="btn-map btn-google-maps" onclick="openGoogleMaps(${track.latitude}, ${track.longitude})">
+                                <i class="fas fa-map-marked-alt"></i>
+                                Abrir en Google Maps
+                            </button>
+                        </div>
+                    ` : ''}
+                    
+                    ${track.notes ? `
+                        <div class="tracking-location" style="margin-top: 12px;">
+                            <div class="location-title">
+                                <i class="fas fa-sticky-note"></i>
+                                Notas del Envío
+                            </div>
+                            <div class="location-address">${track.notes}</div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+        
+        const timelineHTML = `
+            <div class="timeline-section">
+                <div class="section-title">
+                    <i class="fas fa-clock"></i>
+                    Estado del Pedido
+                </div>
+                <div class="timeline">
+                    <div class="timeline-item completed">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-title">Pedido Recibido</div>
+                        <div class="timeline-time">${order.dateStr}</div>
+                    </div>
+                    <div class="timeline-item ${order.status !== 'Cancelled' ? 'completed' : 'pending'}">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-title">En Preparación</div>
+                        <div class="timeline-time">${order.status !== 'Cancelled' ? order.dateStr : 'Pendiente'}</div>
+                    </div>
+                    <div class="timeline-item ${['Shipped', 'Delivered'].includes(order.status) ? 'active' : 'pending'}">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-title">En Tránsito</div>
+                        <div class="timeline-time">${order.status === 'Shipped' || order.status === 'Delivered' ? (order.shippedDate || 'En curso') : 'Pendiente'}</div>
+                    </div>
+                    <div class="timeline-item ${order.status === 'Delivered' ? 'completed' : 'pending'}">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-title">Entregado</div>
+                        <div class="timeline-time">${order.status === 'Delivered' ? (order.deliveredDate || 'Entregado') : 'Pendiente'}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        let itemsHTML = '';
+        if (order.items && order.items.length > 0) {
+            itemsHTML = `
+                <div class="items-list">
+                    <div class="section-title">
+                        <i class="fas fa-shopping-bag"></i>
+                        Productos
+                    </div>
+                    ${order.items.map(item => {
+                        const itemTotalMXN = parseFloat(item.price) * item.quantity * 20;
+                        return `
+                            <div class="order-item">
+                                <img src="${item.image}" class="item-image" alt="${item.name}">
+                                <div class="item-info">
+                                    <div class="item-name">${item.name}</div>
+                                    <div class="item-meta">${item.color} | ${item.size} | Cant: ${item.quantity}</div>
+                                </div>
+                                <div class="item-price">$${itemTotalMXN.toLocaleString('es-MX', {minimumFractionDigits: 2})}</div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+        
+        const customerHTML = `
+            <div class="info-section">
+                <div class="section-title">
+                    <i class="fas fa-user"></i>
+                    Información de Envío
+                </div>
+                <div class="info-row">
+                    <div class<div class="info-label">Nombre</div>
+                    <div class="info-value">${order.customerName}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Teléfono</div>
+                    <div class="info-value">${order.phone}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Dirección</div>
+                    <div class="info-value">${order.address}</div>
+                </div>
+            </div>
+        `;
+        
+        const paymentHTML = `
+            <div class="info-section">
+                <div class="section-title">
+                    <i class="fas fa-credit-card"></i>
+                    Información de Pago
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Método</div>
+                    <div class="info-value">${order.paymentMethod}</div>
+                </div>
+                ${order.paymentMethod !== 'Cash On Delivery' ? `
+                    <div class="info-row">
+                        <div class="info-label">Número</div>
+                        <div class="info-value">${order.senderNum}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">ID Transacción</div>
+                        <div class="info-value">${order.trxId}</div>
+                    </div>
+                ` : ''}
+                <div class="info-row">
+                    <div class="info-label">Total</div>
+                    <div class="info-value" style="color: var(--accent); font-size: 18px;">$${totalMXN.toLocaleString('es-MX', {minimumFractionDigits: 2})}</div>
+                </div>
+            </div>
+        `;
+        
+        const actionsHTML = `
+            <div class="action-buttons">
+                ${order.status === 'Processing' ? `
+                    <button class="btn-action btn-cancel" onclick="cancelOrder('${order.id}')">
+                        <i class="fas fa-times-circle"></i> Cancelar Pedido
+                    </button>
+                ` : ''}
+                <button class="btn-action btn-reorder" onclick="reorder()">
+                    <i class="fas fa-redo"></i> Volver a Ordenar
+                </button>
+            </div>
+        `;
+        
+        content.innerHTML = `
+            ${trackingHTML}
+            ${timelineHTML}
+            ${itemsHTML}
+            ${customerHTML}
+            ${paymentHTML}
+            ${actionsHTML}
+        `;
+        
+        document.getElementById('modalOverlay').classList.add('show');
+        document.getElementById('orderDetailModal').classList.add('show');
+    }
+
+    function closeOrderDetail() {
+        document.getElementById('modalOverlay').classList.remove('show');
+        document.getElementById('orderDetailModal').classList.remove('show');
+    }
+
+    function openGoogleMaps(lat, lng) {
+        const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+        window.open(url, '_blank');
+    }
+
+    function cancelOrder(orderId) {
+        if (confirm('¿Estás seguro de cancelar este pedido?')) {
+            db.ref(`orders/${orderId}`).update({
+                status: 'Cancelled',
+                cancelledDate: new Date().toLocaleString(),
+                cancelledTimestamp: Date.now()
+            })
+            .then(() => {
+                alert('Pedido cancelado exitosamente');
+                closeOrderDetail();
+            })
+            .catch(err => {
+                alert('Error al cancelar el pedido');
+            });
+        }
+    }
+
+    function reorder() {
+        if (!currentOrder.items) {
+            alert('No se pueden reordenar pedidos antiguos');
+            return;
+        }
+        
+        const cart = JSON.parse(localStorage.getItem('scorbak_cart') || '[]');
+        
+        currentOrder.items.forEach(item => {
+            const existing = cart.find(c => 
+                c.id === item.id && c.color === item.color && c.size === item.size
+            );
+            
+            if (existing) {
+                existing.quantity += item.quantity;
+            } else {
+                cart.push({...item});
+            }
+        });
+        
+        localStorage.setItem('scorbak_cart', JSON.stringify(cart));
+        alert('Productos agregados al carrito');
+        window.location.href = 'scorbk.html';
+    }
+
+    function showEmptyState(type) {
+        const container = document.getElementById('ordersContainer');
+        
+        if (type === 'login') {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <h5>Inicia Sesión</h5>
+                    <p>Inicia sesión para ver tus pedidos</p>
+                    <button class="btn-action btn-reorder" onclick="window.location.href='profile.html'" style="max-width: 200px; margin: 20px auto;">
+                        Iniciar Sesión
+                    </button>
+                </div>
+            `;
+        } else {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-box-open"></i>
+                    <h5>Sin Pedidos</h5>
+                    <p>Aún no has realizado ningún pedido</p>
+                    <button class="btn-action btn-reorder" onclick="window.location.href='scorbk.html'" style="max-width: 200px; margin: 20px auto;">
+                        Ir a Comprar
+                    </button>
+                </div>
+            `;
+        }
+    }
+
+    document.getElementById('modalOverlay').addEventListener('click', closeOrderDetail);
+
+    getUserLocation();
+</script>
+</body>
+</html>
